@@ -1,0 +1,5 @@
+area = [[2000]]
+
+predicted_price = model.predict(area)
+
+print("Predicted house price:", predicted_price[0])
