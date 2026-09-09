@@ -1,0 +1,70 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+# Load dataset
+data = pd.read_csv("titanic.csv")
+
+# Display first 10 rows
+print("First 10 rows:")
+print(data.head(10))
+
+# Basic information
+print("\nDataset Information:")
+print(data.info())
+
+# Basic statistics
+print("\nBasic Statistics:")
+print(data.describe())
+
+# Check missing values
+print("\nMissing Values:")
+print(data.isnull().sum())
+
+# Handle missing Age using median
+data["Age"] = data["Age"].fillna(data["Age"].median())
+
+# Handle missing Embarked using mode
+data["Embarked"] = data["Embarked"].fillna(data["Embarked"].mode()[0])
+
+# Handle missing Fare using median
+data["Fare"] = data["Fare"].fillna(data["Fare"].median())
+
+# Encode Sex using LabelEncoder
+label_encoder = LabelEncoder()
+data["Sex"] = label_encoder.fit_transform(data["Sex"])
+
+# Encode Embarked using OneHotEncoder
+encoder = OneHotEncoder(sparse_output=False, handle_unknown="ignore")
+
+embarked_encoded = encoder.fit_transform(data[["Embarked"]])
+
+embarked_columns = encoder.get_feature_names_out(["Embarked"])
+
+embarked_data = pd.DataFrame(
+    embarked_encoded,
+    columns=embarked_columns,
+    index=data.index
+)
+
+# Add encoded columns
+data = pd.concat([data, embarked_data], axis=1)
+
+# Remove original Embarked column
+data.drop("Embarked", axis=1, inplace=True)
+
+# Visualize Age distribution
+plt.hist(data["Age"], bins=20)
+plt.xlabel("Age")
+plt.ylabel("Number of Passengers")
+plt.title("Age Distribution of Titanic Passengers")
+plt.show()
+
+# Check missing values after cleaning
+print("\nMissing Values After Cleaning:")
+print(data.isnull().sum())
+
+# Save cleaned dataset
+data.to_csv("titanic_cleaned.csv", index=False)
+
+print("\nCleaned dataset saved as titanic_cleaned.csv")
