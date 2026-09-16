@@ -1,0 +1,131 @@
+# Import libraries
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+
+# --------------------------------------------------
+# 1. Load Titanic Dataset
+# --------------------------------------------------
+
+titanic = sns.load_dataset("titanic")
+
+# Select useful columns
+data = titanic[
+    ["survived", "pclass", "sex", "age", "sibsp", "parch", "fare"]
+].copy()
+
+# Remove missing values
+data.dropna(inplace=True)
+
+# Convert sex into numerical values
+data["sex"] = data["sex"].map({"male": 0, "female": 1})
+
+# Features and target
+X = data.drop("survived", axis=1)
+y = data["survived"]
+
+
+# Split dataset into training and testing data
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+
+# --------------------------------------------------
+# 2. Logistic Regression
+# --------------------------------------------------
+
+logistic_model = LogisticRegression(max_iter=1000)
+
+logistic_model.fit(X_train, y_train)
+
+y_pred_logistic = logistic_model.predict(X_test)
+
+# Accuracy
+logistic_accuracy = accuracy_score(y_test, y_pred_logistic)
+
+print("Logistic Regression Accuracy:",
+      logistic_accuracy)
+
+
+# Confusion Matrix
+cm = confusion_matrix(y_test, y_pred_logistic)
+
+print("\nConfusion Matrix:")
+print(cm)
+
+
+# Display confusion matrix
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.title("Logistic Regression Confusion Matrix")
+plt.show()
+
+
+# --------------------------------------------------
+# 3. Compare Decision Tree and KNN
+# --------------------------------------------------
+
+# Decision Tree
+dt_model = DecisionTreeClassifier(random_state=42)
+
+dt_model.fit(X_train, y_train)
+
+y_pred_dt = dt_model.predict(X_test)
+
+dt_accuracy = accuracy_score(y_test, y_pred_dt)
+
+
+# KNN
+# Scaling is important for KNN
+scaler = StandardScaler()
+
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+knn_model = KNeighborsClassifier(n_neighbors=5)
+
+knn_model.fit(X_train_scaled, y_train)
+
+y_pred_knn = knn_model.predict(X_test_scaled)
+
+knn_accuracy = accuracy_score(y_test, y_pred_knn)
+
+
+print("\nDecision Tree Accuracy:",
+      dt_accuracy)
+
+print("KNN Accuracy:",
+      knn_accuracy)
+
+
+# --------------------------------------------------
+# 4. Tune max_depth of Decision Tree
+# --------------------------------------------------
+
+print("\nDecision Tree max_depth comparison:")
+
+for depth in [1, 2, 3, 4, 5, 6, 8, 10, None]:
+
+    model = DecisionTreeClassifier(
+        max_depth=depth,
+        random_state=42
+    )
+
+    model.fit(X_train, y_train)
+
+    predictions = model.predict(X_test)
+
+    accuracy = accuracy_score(y_test, predictions)
+
+    print("max_depth =", depth,
+          "Accuracy =", accuracy)
