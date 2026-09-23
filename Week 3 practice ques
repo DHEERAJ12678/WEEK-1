@@ -1,0 +1,147 @@
+# Q1: Apply K-Means on Iris dataset and print cluster centers
+
+from sklearn.datasets import load_iris
+from sklearn.cluster import KMeans
+import pandas as pd
+
+# Load Iris dataset
+iris = load_iris()
+
+# Create DataFrame
+X = pd.DataFrame(iris.data, columns=iris.feature_names)
+
+# Apply K-Means with 3 clusters
+kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
+kmeans.fit(X)
+
+# Print cluster centers
+print("Cluster Centers:")
+print(kmeans.cluster_centers_)
+
+# Print cluster labels
+print("\nCluster Labels:")
+print(kmeans.labels_)
+
+
+
+
+
+Ques2 
+
+
+# Q2: Visualize K-Means clusters with Matplotlib
+
+from sklearn.datasets import load_iris
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+# Load Iris dataset
+iris = load_iris()
+X = iris.data
+
+# Apply K-Means
+kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
+labels = kmeans.fit_predict(X)
+
+# Plot clusters
+plt.figure(figsize=(8, 6))
+
+plt.scatter(
+    X[:, 0],
+    X[:, 1],
+    c=labels,
+    s=50
+)
+
+# Plot cluster centers
+plt.scatter(
+    kmeans.cluster_centers_[:, 0],
+    kmeans.cluster_centers_[:, 1],
+    marker='X',
+    s=200,
+    label='Cluster Centers'
+)
+
+plt.xlabel("Sepal Length")
+plt.ylabel("Sepal Width")
+plt.title("K-Means Clustering on Iris Dataset")
+plt.legend()
+plt.show()   
+
+
+
+
+Ques3
+
+
+
+# Q3: Apply PCA to reduce Iris dataset to 2D
+
+from sklearn.datasets import load_iris
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
+# Load Iris dataset
+iris = load_iris()
+X = iris.data
+
+# Apply PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+
+# Print original and reduced shape
+print("Original shape:", X.shape)
+print("Reduced shape:", X_pca.shape)
+
+# Display first 5 transformed values
+print("\nFirst 5 PCA values:")
+print(X_pca[:5])
+
+# Visualize PCA result
+plt.figure(figsize=(8, 6))
+
+plt.scatter(
+    X_pca[:, 0],
+    X_pca[:, 1],
+    s=50
+)
+
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.title("Iris Dataset after PCA")
+plt.show()
+
+
+
+
+# Q4: Find Explained Variance Ratio
+
+from sklearn.datasets import load_iris
+from sklearn.decomposition import PCA
+
+# Load Iris dataset
+iris = load_iris()
+X = iris.data
+
+# Apply PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+
+# Get explained variance ratio
+variance_ratio = pca.explained_variance_ratio_
+
+print("Explained Variance Ratio:")
+print(variance_ratio)
+
+# Print individual components
+print("\nPC1 explains:",
+      variance_ratio[0] * 100, "% variance")
+
+print("PC2 explains:",
+      variance_ratio[1] * 100, "% variance")
+
+# Total variance explained
+total_variance = variance_ratio.sum()
+
+print("\nTotal variance explained:",
+      total_variance * 100, "%")
